@@ -1,0 +1,724 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Book-O · 리딩 스타트 프로그램</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=Noto+Serif+KR:wght@300;400;500;600;700&family=Nanum+Myeongjo:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --cream: #F7F1E3;
+    --cream-deep: #F0E6CC;
+    --lemon: #F5E27A;
+    --lemon-soft: #FBEFA6;
+    --lilac: #C9BEE0;
+    --lilac-deep: #8E7FB3;
+    --ink: #2B2620;
+    --ink-soft: #4A4038;
+    --ink-muted: #8A7D6E;
+    --line: #D6C9AE;
+    --accent: #B8964D;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html, body {
+    background: #E8DFC8;
+    font-family: 'Noto Serif KR', serif;
+    color: var(--ink);
+    -webkit-font-smoothing: antialiased;
+    padding: 30px 16px;
+    min-height: 100vh;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+  }
+
+  .poster {
+    width: 100%;
+    max-width: 560px;
+    background:
+      radial-gradient(ellipse at 20% 8%, rgba(251, 239, 166, 0.55) 0%, transparent 45%),
+      radial-gradient(ellipse at 85% 92%, rgba(201, 190, 224, 0.28) 0%, transparent 50%),
+      radial-gradient(ellipse at 80% 12%, rgba(255, 250, 225, 0.4) 0%, transparent 38%),
+      linear-gradient(180deg, #FAF4E2 0%, #F4EBD2 100%);
+    position: relative;
+    overflow: hidden;
+    box-shadow:
+      0 40px 80px -20px rgba(60, 45, 20, 0.25),
+      0 20px 40px -15px rgba(60, 45, 20, 0.15);
+    padding: 56px 48px 48px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* paper grain */
+  .poster::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/%3E%3CfeColorMatrix values='0 0 0 0 0.35 0 0 0 0 0.28 0 0 0 0 0.15 0 0 0 0.08 0'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+    mix-blend-mode: multiply;
+    opacity: 0.5;
+    pointer-events: none;
+    z-index: 1;
+  }
+
+  .decor-books {
+    position: absolute;
+    top: 18px;
+    right: 18px;
+    width: 140px;
+    height: 140px;
+    z-index: 2;
+    opacity: 0.9;
+  }
+
+  .decor-leaf {
+    position: absolute;
+    bottom: 20px;
+    left: -24px;
+    width: 150px;
+    opacity: 0.45;
+    z-index: 1;
+  }
+
+  .decor-circle {
+    position: absolute;
+    top: 45%;
+    right: -130px;
+    width: 240px;
+    height: 240px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(201, 190, 224, 0.32) 0%, transparent 70%);
+    z-index: 0;
+    filter: blur(8px);
+  }
+
+  .content {
+    position: relative;
+    z-index: 5;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+    margin-bottom: 56px;
+  }
+
+  .brand {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 500;
+    font-size: 16px;
+    letter-spacing: 0.32em;
+    color: var(--ink);
+    text-transform: uppercase;
+  }
+
+  .brand .bullet {
+    display: inline-block;
+    width: 4px;
+    height: 4px;
+    background: var(--lilac-deep);
+    border-radius: 50%;
+    vertical-align: middle;
+    margin: 0 8px 3px 8px;
+  }
+
+  .caption-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-weight: 400;
+    font-size: 12.5px;
+    letter-spacing: 0.14em;
+    color: var(--ink-soft);
+    padding: 6px 13px;
+    border: 0.8px solid var(--line);
+    border-radius: 100px;
+    background: rgba(255, 252, 240, 0.5);
+  }
+
+  .caption-pill .ko {
+    font-family: 'Noto Serif KR', serif;
+    font-style: normal;
+    font-size: 11px;
+    font-weight: 400;
+    letter-spacing: 0.08em;
+    color: var(--ink);
+  }
+
+  .caption-pill .dot {
+    width: 3px;
+    height: 3px;
+    background: var(--lilac-deep);
+    border-radius: 50%;
+  }
+
+  .eyebrow {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 20px;
+  }
+
+  .eyebrow .line {
+    width: 40px;
+    height: 0.8px;
+    background: var(--accent);
+  }
+
+  .eyebrow .text {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 12.5px;
+    letter-spacing: 0.2em;
+    color: var(--accent);
+    text-transform: uppercase;
+  }
+
+  .title {
+    font-family: 'Nanum Myeongjo', 'Noto Serif KR', serif;
+    font-weight: 800;
+    font-size: 46px;
+    line-height: 1.1;
+    letter-spacing: -0.02em;
+    color: var(--ink);
+    margin-bottom: 6px;
+  }
+
+  .title .line-1 { display: block; }
+  .title .line-2 { display: block; }
+
+  .title .underline {
+    position: relative;
+    display: inline-block;
+  }
+
+  .title .underline::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 3px;
+    height: 9px;
+    background: var(--lemon);
+    opacity: 0.7;
+    z-index: -1;
+    border-radius: 2px;
+  }
+
+  .title-en {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-weight: 400;
+    font-size: 16px;
+    color: var(--ink-muted);
+    letter-spacing: 0.06em;
+    margin-top: 8px;
+    margin-bottom: 24px;
+  }
+
+  .subcopy {
+    font-family: 'Noto Serif KR', serif;
+    font-weight: 400;
+    font-size: 14.5px;
+    line-height: 1.75;
+    color: var(--ink-soft);
+    letter-spacing: -0.005em;
+    margin-bottom: 32px;
+  }
+
+  .price-block {
+    position: relative;
+    padding: 24px 0;
+    margin-bottom: 26px;
+    border-top: 0.8px solid var(--line);
+    border-bottom: 0.8px solid var(--line);
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 16px;
+  }
+
+  .price-label {
+    display: flex;
+    flex-direction: column;
+    gap: 3px;
+  }
+
+  .price-label .sessions {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-weight: 400;
+    font-size: 12.5px;
+    letter-spacing: 0.18em;
+    color: var(--ink-muted);
+    text-transform: uppercase;
+  }
+
+  .price-label .ko-label {
+    font-family: 'Noto Serif KR', serif;
+    font-weight: 500;
+    font-size: 13.5px;
+    color: var(--ink);
+    letter-spacing: 0.02em;
+  }
+
+  .price-amount {
+    font-family: 'Nanum Myeongjo', 'Noto Serif KR', serif;
+    font-weight: 800;
+    font-size: 40px;
+    color: var(--ink);
+    letter-spacing: -0.03em;
+    line-height: 1;
+    display: flex;
+    align-items: baseline;
+    gap: 3px;
+  }
+
+  .price-amount .won {
+    font-size: 17px;
+    font-weight: 500;
+    color: var(--ink-soft);
+    margin-left: 2px;
+  }
+
+  .checklist {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px 20px;
+    margin-bottom: 28px;
+  }
+
+  /* CTA Button */
+  .cta-wrap {
+    margin-bottom: 30px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+
+  .cta-button {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 18px 24px;
+    background: var(--ink);
+    color: #FAF4E2;
+    text-decoration: none;
+    border-radius: 100px;
+    font-family: 'Noto Serif KR', serif;
+    font-weight: 500;
+    font-size: 14px;
+    letter-spacing: 0.02em;
+    transition: all 0.3s ease;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 8px 20px -8px rgba(43, 38, 32, 0.4);
+  }
+
+  .cta-button::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(90deg, transparent 0%, rgba(245, 226, 122, 0.15) 50%, transparent 100%);
+    transform: translateX(-100%);
+    transition: transform 0.6s ease;
+  }
+
+  .cta-button:hover {
+    background: #1F1B16;
+    transform: translateY(-1px);
+    box-shadow: 0 12px 28px -8px rgba(43, 38, 32, 0.5);
+  }
+
+  .cta-button:hover::before {
+    transform: translateX(100%);
+  }
+
+  .cta-content {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .cta-icon {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--lemon);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+
+  .cta-icon svg {
+    width: 14px;
+    height: 14px;
+  }
+
+  .cta-text {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+  }
+
+  .cta-text .main {
+    font-family: 'Noto Serif KR', serif;
+    font-weight: 600;
+    font-size: 14.5px;
+    color: #FAF4E2;
+    letter-spacing: 0.01em;
+  }
+
+  .cta-text .sub {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-weight: 400;
+    font-size: 11px;
+    color: rgba(250, 244, 226, 0.6);
+    letter-spacing: 0.15em;
+    text-transform: uppercase;
+  }
+
+  .cta-arrow {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 0.8px solid rgba(250, 244, 226, 0.25);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    position: relative;
+    z-index: 1;
+    transition: transform 0.3s ease;
+  }
+
+  .cta-button:hover .cta-arrow {
+    transform: translateX(3px);
+  }
+
+  .cta-arrow svg {
+    width: 12px;
+    height: 12px;
+  }
+
+  .cta-helper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font-family: 'Noto Serif KR', serif;
+    font-weight: 400;
+    font-size: 11px;
+    color: var(--ink-muted);
+    letter-spacing: 0.02em;
+  }
+
+  .cta-helper .naver-dot {
+    width: 10px;
+    height: 10px;
+    background: #03C75A;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 7px;
+    font-weight: 700;
+    color: white;
+  }
+
+  .check-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: 'Noto Serif KR', serif;
+    font-weight: 400;
+    font-size: 12.5px;
+    color: var(--ink-soft);
+    letter-spacing: -0.005em;
+  }
+
+  .check-item .check-icon {
+    flex-shrink: 0;
+    width: 16px;
+    height: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .check-item .check-icon svg {
+    width: 100%;
+    height: 100%;
+  }
+
+  .footer {
+    padding-top: 22px;
+    border-top: 0.8px solid var(--line);
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+
+  .footer-copy {
+    font-family: 'Noto Serif KR', serif;
+    font-weight: 400;
+    font-size: 11px;
+    line-height: 1.85;
+    color: var(--ink-muted);
+  }
+
+  .footer-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 4px;
+  }
+
+  .footer-bottom .signature {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-size: 11.5px;
+    letter-spacing: 0.12em;
+    color: var(--ink);
+  }
+
+  .footer-bottom .date {
+    font-family: 'Cormorant Garamond', serif;
+    font-weight: 400;
+    font-size: 10.5px;
+    letter-spacing: 0.25em;
+    color: var(--ink-muted);
+    text-transform: uppercase;
+  }
+
+  .corner {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    z-index: 3;
+  }
+  .corner.tl { top: 18px; left: 18px; border-top: 0.8px solid var(--line); border-left: 0.8px solid var(--line); }
+  .corner.tr { top: 18px; right: 18px; border-top: 0.8px solid var(--line); border-right: 0.8px solid var(--line); }
+  .corner.bl { bottom: 18px; left: 18px; border-bottom: 0.8px solid var(--line); border-left: 0.8px solid var(--line); }
+  .corner.br { bottom: 18px; right: 18px; border-bottom: 0.8px solid var(--line); border-right: 0.8px solid var(--line); }
+
+  @media (max-width: 600px) {
+    body { padding: 16px 10px; }
+    .poster { padding: 44px 28px 32px; }
+    .header { margin-bottom: 36px; }
+    .title { font-size: 34px; }
+    .title-en { font-size: 13px; }
+    .price-amount { font-size: 30px; }
+    .price-amount .won { font-size: 14px; }
+    .price-label .ko-label { font-size: 12.5px; }
+    .price-label .sessions { font-size: 11.5px; }
+    .subcopy { font-size: 13px; }
+    .checklist { grid-template-columns: 1fr; gap: 10px; }
+    .check-item { font-size: 12px; }
+    .cta-button { padding: 16px 18px; gap: 12px; }
+    .cta-text .main { font-size: 13.5px; }
+    .cta-text .sub { font-size: 10px; }
+    .cta-icon { width: 26px; height: 26px; }
+    .cta-arrow { width: 28px; height: 28px; }
+    .cta-helper { font-size: 10.5px; }
+    .decor-books { width: 100px; height: 100px; top: 14px; right: 14px; }
+    .decor-leaf { width: 110px; bottom: 14px; opacity: 0.35; }
+    .caption-pill { font-size: 10.5px; padding: 5px 10px; gap: 6px; }
+    .caption-pill .ko { font-size: 10px; }
+    .brand { font-size: 14px; letter-spacing: 0.24em; }
+    .corner { width: 16px; height: 16px; }
+    .corner.tl, .corner.tr { top: 14px; }
+    .corner.bl, .corner.br { bottom: 14px; }
+    .corner.tl, .corner.bl { left: 14px; }
+    .corner.tr, .corner.br { right: 14px; }
+  }
+
+  @media (max-width: 380px) {
+    .poster { padding: 38px 22px 28px; }
+    .title { font-size: 30px; }
+    .header { margin-bottom: 30px; flex-direction: column; gap: 14px; align-items: flex-start; }
+    .price-block { flex-direction: column; align-items: flex-start; gap: 10px; padding: 20px 0; }
+  }
+
+  @media print {
+    body { background: white; padding: 0; }
+    .poster { box-shadow: none; max-width: 100%; }
+  }
+</style>
+</head>
+<body>
+  <div class="poster">
+    <div class="corner tl"></div>
+    <div class="corner tr"></div>
+    <div class="corner bl"></div>
+    <div class="corner br"></div>
+
+    <div class="decor-circle"></div>
+
+    <svg class="decor-books" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <g opacity="0.9">
+        <rect x="55" y="140" width="115" height="18" rx="1.5" fill="#E8D8AE" stroke="#B8964D" stroke-width="0.8"/>
+        <line x1="65" y1="149" x2="160" y2="149" stroke="#B8964D" stroke-width="0.4" opacity="0.6"/>
+        <rect x="62" y="143" width="14" height="12" fill="#B8964D" opacity="0.3"/>
+        <rect x="48" y="120" width="108" height="20" rx="1.5" fill="#F5E27A" stroke="#B8964D" stroke-width="0.8"/>
+        <text x="102" y="134" font-family="Cormorant Garamond" font-style="italic" font-size="9" fill="#6B5530" text-anchor="middle" letter-spacing="1">Book-O</text>
+        <g transform="rotate(-4 110 105)">
+          <rect x="62" y="98" width="96" height="16" rx="1.5" fill="#C9BEE0" stroke="#8E7FB3" stroke-width="0.8"/>
+          <line x1="68" y1="106" x2="152" y2="106" stroke="#8E7FB3" stroke-width="0.3" opacity="0.5"/>
+        </g>
+        <path d="M 138 90 Q 148 78, 158 84 Q 156 96, 144 98 Q 138 96, 138 90 Z" fill="#C9BEE0" opacity="0.6"/>
+        <path d="M 148 84 Q 148 92, 146 96" stroke="#8E7FB3" stroke-width="0.5" fill="none"/>
+      </g>
+    </svg>
+
+    <svg class="decor-leaf" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <g opacity="0.55" stroke="#B8964D" stroke-width="0.7" fill="none">
+        <path d="M 40 100 Q 80 60, 140 70"/>
+        <path d="M 60 90 Q 68 75, 80 72" />
+        <path d="M 75 82 Q 83 68, 95 66" />
+        <path d="M 90 76 Q 98 63, 110 62" />
+        <path d="M 105 72 Q 113 60, 125 60" />
+        <path d="M 120 68 Q 128 58, 138 60" />
+        <ellipse cx="72" cy="72" rx="5" ry="2.5" transform="rotate(-30 72 72)" fill="#F5E27A" opacity="0.6"/>
+        <ellipse cx="88" cy="66" rx="5" ry="2.5" transform="rotate(-25 88 66)" fill="#F5E27A" opacity="0.6"/>
+        <ellipse cx="104" cy="62" rx="5" ry="2.5" transform="rotate(-20 104 62)" fill="#C9BEE0" opacity="0.6"/>
+        <ellipse cx="120" cy="60" rx="5" ry="2.5" transform="rotate(-15 120 60)" fill="#F5E27A" opacity="0.6"/>
+      </g>
+    </svg>
+
+    <div class="content">
+      <div class="header">
+        <div class="brand">Book<span class="bullet"></span>O</div>
+        <div class="caption-pill">
+          <span>April Only</span>
+          <span class="dot"></span>
+          <span class="ko">4월 한정</span>
+        </div>
+      </div>
+
+      <div class="eyebrow">
+        <span class="line"></span>
+        <span class="text">Reading Start Program</span>
+      </div>
+
+      <h1 class="title">
+        <span class="line-1">리딩 스타트</span>
+        <span class="line-2"><span class="underline">프로그램</span></span>
+      </h1>
+
+      <p class="title-en">— a quiet beginning with English books —</p>
+
+      <p class="subcopy">
+        영어원서 읽기의 시작,<br>
+        Book-O에서 제대로 시작해보세요.
+      </p>
+
+      <div class="price-block">
+        <div class="price-label">
+          <span class="sessions">5 Sessions</span>
+          <span class="ko-label">5회 프로그램</span>
+        </div>
+        <div class="price-amount">
+          99,000<span class="won">원</span>
+        </div>
+      </div>
+
+      <div class="checklist">
+        <div class="check-item">
+          <span class="check-icon">
+            <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="8" cy="8" r="7" stroke="#B8964D" stroke-width="0.8" fill="#FBEFA6"/>
+              <path d="M 5 8 L 7 10 L 11 6" stroke="#2B2620" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+            </svg>
+          </span>
+          <span>신규 학생 대상</span>
+        </div>
+
+        <div class="check-item">
+          <span class="check-icon">
+            <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="8" cy="8" r="7" stroke="#B8964D" stroke-width="0.8" fill="#FBEFA6"/>
+              <path d="M 5 8 L 7 10 L 11 6" stroke="#2B2620" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+            </svg>
+          </span>
+          <span>1인 1회 한정</span>
+        </div>
+
+        <div class="check-item">
+          <span class="check-icon">
+            <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="8" cy="8" r="7" stroke="#B8964D" stroke-width="0.8" fill="#FBEFA6"/>
+              <path d="M 5 8 L 7 10 L 11 6" stroke="#2B2620" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+            </svg>
+          </span>
+          <span>4/21–4/30 등록 마감</span>
+        </div>
+
+        <div class="check-item">
+          <span class="check-icon">
+            <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="8" cy="8" r="7" stroke="#B8964D" stroke-width="0.8" fill="#FBEFA6"/>
+              <path d="M 5 8 L 7 10 L 11 6" stroke="#2B2620" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+            </svg>
+          </span>
+          <span>유효기간 내 사용</span>
+        </div>
+      </div>
+
+      <div class="cta-wrap">
+        <a class="cta-button" href="https://map.naver.com/p/entry/place/2061266127?placePath=/ticket?entry=plt&from=map&fromPanelNum=1&additionalHeight=76&timestamp=202604201624&locale=ko&svcName=map_pcv5&from=map&fromPanelNum=1&additionalHeight=76&timestamp=202604201624&locale=ko&svcName=map_pcv5&searchType=place&lng=127.0715755&lat=37.2000316&c=15.00,0,0,0,dh" target="_blank" rel="noopener noreferrer">
+          <div class="cta-content">
+            <span class="cta-icon">
+              <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M 4 3 L 4 13 M 4 3 L 11 3 L 11 13 L 4 13" stroke="#2B2620" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+                <path d="M 6.5 6.5 L 9 6.5 M 6.5 9 L 9 9" stroke="#2B2620" stroke-width="1" stroke-linecap="round"/>
+              </svg>
+            </span>
+            <div class="cta-text">
+              <span class="main">지금 예약하기</span>
+              <span class="sub">Reserve Now</span>
+            </div>
+          </div>
+          <span class="cta-arrow">
+            <svg viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M 5 3 L 10 8 L 5 13" stroke="#FAF4E2" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round" fill="none"/>
+            </svg>
+          </span>
+        </a>
+        <div class="cta-helper">
+          <span class="naver-dot">N</span>
+          <span>네이버 예약으로 간편하게 신청하세요</span>
+        </div>
+      </div>
+
+      <div class="footer">
+        <p class="footer-copy">
+          영어원서 읽기 &middot; 이해 &middot; 기록까지<br>
+          Book-O의 수업 흐름을 직접 경험해볼 수 있는<br>
+          4월 한정 시작 프로그램입니다.
+        </p>
+        <div class="footer-bottom">
+          <span class="signature">Read slowly, read well.</span>
+          <span class="date">VOL. 04 / 2026</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
